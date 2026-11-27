@@ -46,7 +46,7 @@ El comando no detecta las librerías de proveedores (ítem 1.4): esa parte se re
 
 | # | Ítem | Sí | No |
 |---|---|---|---|
-| 4.1 | Los nombres siguen el glosario [NECESITA ACLARACIÓN: ¿en qué documento vive el glosario? No existe aún en el repositorio] | ☐ | ☐ |
+| 4.1 | Los nombres siguen el glosario de [arquitectura.md](../arquitectura.md) [NECESITA ACLARACIÓN: `arquitectura.md` aún no existe; el glosario queda pendiente de Sergio] | ☐ | ☐ |
 | 4.2 | Las funciones son cortas | ☐ | ☐ |
 | 4.3 | Cada clase y función tiene una sola responsabilidad | ☐ | ☐ |
 | 4.4 | No hay código muerto ni comentado | ☐ | ☐ |
