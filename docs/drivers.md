@@ -198,9 +198,49 @@ Se copian de `vision.md` sin transformarlas; se añaden tipo, origen e impacto.
 
 ## 5. Matriz de priorización
 
-> Importancia: **propuesta del equipo, confirmar con el docente.** Dificultad: estimación del equipo.
+> Importancia: **propuesta del equipo, confirmar con el docente.** Dificultad: valoración técnica del gerente de desarrollo. Ajuste del paso 4 (Sergio Velásquez): las posiciones de la matriz salen de los puntajes de 5.1, no de una estimación a ojo.
 
-### 5.1 Matriz
+### 5.1 Criterios y puntajes
+
+**Importancia** (un punto por criterio; alta si suma 2 o más):
+
+| Criterio | Pregunta |
+|---|---|
+| I1 | ¿Es necesario para el flujo de venta de punta a punta (OB-02)? |
+| I2 | ¿Sostiene otro objetivo de negocio (OB-01, OB-03, OB-04, OB-05)? |
+| I3 | ¿Sale de una regla explícita del enunciado (RN) y no de un supuesto? |
+| I4 | ¿El enunciado lo sugiere para la iteración 1 (evento, cartelera, reserva y pago)? |
+
+**Dificultad** (un punto por factor; alta si suma 3 o más):
+
+| Factor | Pregunta |
+|---|---|
+| D1 | ¿Compite por el cupo con otras operaciones (concurrencia)? |
+| D2 | ¿Usa un sistema externo por un puerto (pasarela, mensajería, SIA)? |
+| D3 | ¿Depende del tiempo (puerto Reloj: vencimiento, cierre de la venta)? |
+| D4 | ¿Lo dispara algo distinto del usuario o termina de forma asíncrona? |
+| D5 | ¿Modifica varias entidades en una misma transacción? |
+
+| CU | I1 | I2 | I3 | I4 | Importancia | D1 | D2 | D3 | D4 | D5 | Dificultad | Cuadrante |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CU-01 Registrar evento | ✓ | | ✓ | ✓ | 3 alta | | | | | | 0 baja | 2 |
+| CU-02 Editar borrador | | | | | 0 baja | | | | | | 0 baja | 3 |
+| CU-03 Publicar evento | ✓ | | ✓ | ✓ | 3 alta | | | | | | 0 baja | 2 |
+| CU-04 Cancelar evento | | ✓ | ✓ | | 2 alta | ✓ | ✓ | | ✓ | ✓ | 4 alta | 1 |
+| CU-05 Consultar cartelera | ✓ | | ✓ | ✓ | 3 alta | | | ✓ | | | 1 baja | 2 |
+| CU-06 Reservar boletas | ✓ | ✓ | ✓ | ✓ | 4 alta | ✓ | ✓ | ✓ | | ✓ | 4 alta | 1 |
+| CU-07 Pagar reserva | ✓ | ✓ | ✓ | ✓ | 4 alta | | ✓ | ✓ | ✓ | ✓ | 4 alta | 1 |
+| CU-08 Emitir y enviar boletas | ✓ | ✓ | ✓ | | 3 alta | | ✓ | | ✓ | | 2 baja | 2 |
+| CU-09 Vencer reservas | | ✓ | ✓ | | 2 alta | ✓ | | ✓ | ✓ | | 3 alta | 1 |
+| CU-10 Procesar confirmación | | ✓ | ✓ | | 2 alta | ✓ | ✓ | ✓ | ✓ | ✓ | 5 alta | 1 |
+| CU-11 Estado de la reserva | | | | | 0 baja | | | | | | 0 baja | 3 |
+| CU-12 Acceso del organizador | | | | | 0 baja | | | | | | 0 baja | 3 |
+
+**Cambio frente a la versión anterior:** CU-08 pasa del cuadrante 1 al 2. Tiene importancia alta, pero su dificultad técnica es baja: no compite por el cupo, no depende del tiempo y la generación del QR es una librería en un adaptador. Sigue siendo caso de uso primario (sección 1.3), porque la prioridad en la matriz y ser primario responden a criterios distintos.
+
+### 5.2 Matriz
+
+Posición: x = 0,1 + 0,16 × dificultad; y = 0,2 + 0,175 × importancia. Los puntos que coinciden se desplazan un poco para que se lean.
 
 ```mermaid
 quadrantChart
@@ -211,34 +251,36 @@ quadrantChart
     quadrant-2 "2 Hacer ya"
     quadrant-3 "3 Si sobra tiempo"
     quadrant-4 "4 Cuestionar"
-    CU-06 Reservar: [0.85, 0.95]
-    CU-07 Pagar: [0.75, 0.9]
-    CU-08 Emitir boletas: [0.6, 0.85]
-    CU-09 Vencer: [0.55, 0.8]
-    CU-10 Confirmacion: [0.9, 0.75]
-    CU-04 Cancelar: [0.7, 0.7]
-    CU-05 Cartelera: [0.2, 0.85]
-    CU-03 Publicar: [0.15, 0.8]
-    CU-01 Registrar: [0.3, 0.75]
-    CU-11 Estado reserva: [0.25, 0.4]
-    CU-12 Acceso admin: [0.35, 0.35]
-    CU-02 Editar borrador: [0.2, 0.3]
+    CU-06 Reservar: [0.74, 0.9]
+    CU-07 Pagar: [0.7, 0.86]
+    CU-04 Cancelar: [0.74, 0.55]
+    CU-09 Vencer: [0.58, 0.55]
+    CU-10 Confirmacion: [0.9, 0.55]
+    CU-08 Emitir boletas: [0.42, 0.72]
+    CU-01 Registrar: [0.1, 0.72]
+    CU-03 Publicar: [0.14, 0.68]
+    CU-05 Cartelera: [0.26, 0.72]
+    CU-02 Editar borrador: [0.1, 0.2]
+    CU-11 Estado reserva: [0.14, 0.24]
+    CU-12 Acceso admin: [0.18, 0.2]
     Sistemas reales: [0.85, 0.25]
     Prueba de carga: [0.75, 0.2]
 ```
 
-### 5.2 Todos los drivers por cuadrante
+### 5.3 Todos los drivers por cuadrante
 
-Las restricciones (RT) no se priorizan: aplican a todo. Los escenarios (EAC) y preocupaciones (PA) se ubican con el caso de uso que los valida o que necesita la decisión.
+Las restricciones (RT) no se priorizan: aplican a todo. Los escenarios (EAC) y las preocupaciones (PA) se ubican con el caso de uso que los valida o que necesita la decisión.
 
 | Cuadrante | Casos de uso | Escenarios y preocupaciones que arrastran |
 |---|---|---|
-| **1 Atender primero** (importancia alta, dificultad alta) | CU-06, CU-07, CU-08, CU-09, CU-10, CU-04 | EAC-01, EAC-02, EAC-03, EAC-04, EAC-05, EAC-06, EAC-07; PA-02, PA-03, PA-04, PA-07, PA-09 |
-| **2 Hacer ya** (importancia alta, dificultad baja) | CU-01, CU-03, CU-05 | PA-01, PA-05, PA-06 (se deciden en la semana 0 porque todo depende de ellas) |
+| **1 Atender primero** (importancia alta, dificultad alta) | CU-06, CU-07, CU-10, CU-04, CU-09 | EAC-01, EAC-03, EAC-04, EAC-05, EAC-06; PA-02, PA-03, PA-04, PA-07 |
+| **2 Hacer ya** (importancia alta, dificultad baja) | CU-01, CU-03, CU-05, CU-08 | EAC-02, EAC-07; PA-01, PA-05, PA-06, PA-09 (PA-01, PA-05 y PA-06 se deciden en la semana 0 porque todo depende de ellas) |
 | **3 Si sobra tiempo** (importancia baja, dificultad baja) | CU-11, CU-12, CU-02 | PA-08 |
 | **4 Cuestionar** (importancia baja, dificultad alta) | — | Integración con pasarela, mensajería o SIA reales (fuera de alcance, S-06); prueba de carga con un número real de compradores (sin cifra, S-02) |
 
-### 5.3 Orden del backlog según dependencias
+### 5.4 Orden del backlog según dependencias
+
+Regla de orden: primero las dependencias; entre ítems ya habilitados, primero el que completa el flujo de punta a punta (OB-02) y luego el de mayor dificultad, para enfrentar el riesgo técnico pronto.
 
 ```mermaid
 flowchart LR
@@ -253,32 +295,34 @@ flowchart LR
     CU01 --> CU02[CU-02]
 ```
 
-| Orden | Ítem | Depende de | Horas (propuesta) | Acumulado |
-|---|---|---|---|---|
-| 1 | Base transversal (estructura, puertos, reloj, `.env`, docker, script de demostración) | ADR-001 a ADR-004 | 4 | 4 |
-| 2 | CU-01 Registrar evento | Base | 6 | 10 |
-| 3 | CU-03 Publicar evento | CU-01 | 2 | 12 |
-| 4 | CU-05 Consultar cartelera | CU-03 | 3 | 15 |
-| 5 | CU-06 Reservar boletas | CU-05 | 10 | 25 |
-| 6 | CU-07 Pagar reserva (dos pasarelas) | CU-06 | 8 | 33 |
-| 7 | CU-08 Emitir y enviar boletas | CU-07 | 6 | 39 |
-| 8 | CU-09 Vencer reservas | CU-06 | 4 | 43 |
-| 9 | CU-10 Procesar confirmación | CU-07, CU-09 | 8 | 51 |
-| 10 | CU-04 Cancelar evento | CU-08, CU-10 | 8 | 59 |
-| 11 | CU-12 Acceso del organizador | CU-01 | 4 | 63 |
-| 12 | CU-11 Estado de la reserva | CU-07 | 3 | 66 |
-| 13 | CU-02 Editar borrador | CU-01 | 3 | 69 |
+| Orden | Ítem | Cuadrante | Depende de | Horas (propuesta) | Acumulado | Iteración (propuesta) |
+|---|---|---|---|---|---|---|
+| 1 | Base transversal (estructura, puertos, reloj, `.env`, docker, script de demostración) | — | ADR-001 a ADR-004 | 4 | 4 | 1 |
+| 2 | CU-01 Registrar evento | 2 | Base | 6 | 10 | 1 |
+| 3 | CU-03 Publicar evento | 2 | CU-01 | 2 | 12 | 1 |
+| 4 | CU-05 Consultar cartelera | 2 | CU-03 | 3 | 15 | 1 |
+| 5 | CU-06 Reservar boletas | 1 | CU-05 | 10 | 25 | 1 |
+| 6 | CU-07 Pagar reserva (dos pasarelas) | 1 | CU-06 | 8 | 33 | 1 |
+| 7 | CU-08 Emitir y enviar boletas | 2 | CU-07 | 6 | 39 | 2 |
+| 8 | CU-09 Vencer reservas | 1 | CU-06 | 4 | 43 | 2 |
+| 9 | CU-10 Procesar confirmación | 1 | CU-07, CU-09 | 8 | 51 | 2 |
+| 10 | CU-04 Cancelar evento | 1 | CU-08, CU-10 | 8 | 59 | 2 |
+| 11 | CU-12 Acceso del organizador | 3 | CU-01 | 4 | 63 | 2 |
+| 12 | CU-11 Estado de la reserva | 3 | CU-07 | 3 | 66 | 2 |
+| 13 | CU-02 Editar borrador | 3 | CU-01 | 3 | 69 | Fuera |
 
-Las horas incluyen spec, plan, tareas, implementación y validación de cada ítem. Son una propuesta para que la gerente de planeación las ajuste.
+- **CU-05 antes que CU-06**, aunque esté en el cuadrante 2: la reserva parte de un evento elegido en la cartelera.
+- **CU-08 antes que CU-09**, aunque CU-09 esté en el cuadrante 1: CU-08 cierra el flujo de punta a punta (OB-02), que el enunciado exige funcional de principio a fin. CU-09 solo depende de CU-06, así que puede adelantarse si la iteración 1 deja horas libres.
+- Las horas incluyen spec, plan, tareas, implementación y validación de cada ítem. Son una propuesta para que la gerente de planeación las ajuste (M8).
 
-### 5.4 Capacidad y lo que no alcanza
+### 5.5 Capacidad y lo que no alcanza
 
-Capacidad del equipo (3 personas): [NECESITA ACLARACIÓN: ¿la capacidad es de 21 h o de 33 h por iteración, y es del equipo completo o por persona?]. Con las horas propuestas de 5.3:
+Capacidad del equipo (3 personas): [NECESITA ACLARACIÓN: ¿la capacidad es de 21 h o de 33 h por iteración, y es del equipo completo o por persona?]. Con las horas propuestas de 5.4:
 
 | Escenario | Horas totales (2 iteraciones) | Iteración 1 llega hasta | No alcanzan |
 |---|---|---|---|
-| 21 h por iteración, equipo completo | 42 | CU-05 (15 h); CU-06 ya no cabe | CU-09, CU-10, CU-04, CU-12, CU-11, CU-02. **Quedan fuera tres casos de uso primarios**: no se cumplen OB-04 ni las reglas RN-07 y RN-10 |
+| 21 h por iteración, equipo completo | 42 | CU-05 (15 h); CU-06 ya no cabe | CU-09, CU-10, CU-04, CU-12, CU-11, CU-02. **Quedan fuera tres casos de uso del cuadrante 1**: no se cumplen OB-04 ni las reglas RN-07 y RN-10 |
 | 33 h por iteración, equipo completo | 66 | CU-07 (33 h), como sugiere el enunciado | CU-02, sin holgura para imprevistos |
 | 21 o 33 h por persona (63 o 99 h por iteración) | 126 o 198 | Todo el orden 1 a 6 | Ninguno |
 
-Con 21 h por iteración del equipo no caben los casos de uso primarios: hay que revisar las estimaciones o la capacidad antes de la planeación de la iteración 1. Todos los ítems, se construyan o no, quedan como issues en el tablero (RT-09).
+Con 21 h por iteración del equipo no caben los casos de uso del cuadrante 1: hay que revisar las estimaciones o la capacidad antes de la planeación de la iteración 1. Todos los ítems, se construyan o no, quedan como issues en el tablero (RT-09).
