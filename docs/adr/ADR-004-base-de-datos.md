@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Estado | Aceptado |
-| Autor/a | [NECESITA ACLARACIÓN: ¿quién firma este ADR? El ADR-002 lo firma Mariana García] |
+| Autora | Mariana García |
 | Fecha | 27/11/2026 |
 | Aprobación de arquitectura | Sergio Velásquez (gerente de desarrollo) [NECESITA ACLARACIÓN: según `normas.md` en arquitectura decide Sergio; ¿ya aprobó esta decisión para dejarla en estado Aceptado?] |
 | Relacionados | [ADR-001](ADR-001-estilo-arquitectonico.md) (estilo hexagonal), [ADR-002](ADR-002-backend.md) (backend con SQLAlchemy), ADR de persistencia (estrategia de integridad), `vision.md` (RT-02, RT-03, RT-07, OB-01, R-03) |
