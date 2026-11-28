@@ -96,3 +96,28 @@ Formulario en `admin/` para registrar el evento: sus cuatro datos y una lista de
 
 - Regla de dependencia: los comandos de la sección 4 de la [vista de desarrollo](../../docs/vistas/03-desarrollo.md) devuelven vacío; en particular, nada de `sqlalchemy` ni `pydantic` en `nucleo/`.
 - Los escenarios de [spec.md](spec.md) se validan uno por uno en [validacion.md](validacion.md). CU01-E09 exige reiniciar el backend y consultar la base.
+
+## Revisión frente a la arquitectura
+
+Revisor: gerente de desarrollo (Sergio Velásquez) · Fecha: 27/11/2026 · Lista de criterios: [vista de desarrollo](../../docs/vistas/03-desarrollo.md), ADR y [checklist](../../docs/equipo/checklist-revision.md), grupo 3.
+
+| Criterio | Resultado |
+|---|---|
+| Cita los ADR que aplican | Sí (001, 002, 003, 004, 006) |
+| Solo usa puertos, adaptadores y archivos de la vista de desarrollo; lo nuevo está marcado *propuesta* | Sí |
+| Respeta la regla de dependencia (Pydantic, SQLAlchemy y FastAPI fuera del núcleo; DTO como `dataclass`) | Sí |
+| El tiempo llega por el puerto `Reloj` o el plan justifica no usarlo | No lo usa; justificado (spec P-02) |
+| Errores: excepciones de dominio traducidas a HTTP solo en `errores.py` | Sí: validación del dominio → 422, igual que CU-06 |
+| El frontend no contiene reglas de negocio | Sí |
+| Respeta el orden de bloqueos del ADR-006 | No aplica: crea filas nuevas |
+
+**Observaciones:**
+
+| ID | Observación |
+|---|---|
+| O-01 | Las restricciones propuestas en la base (aforo y precio mayores que 0, nombre de localidad único por evento) son coherentes con el ADR-006: la base respalda lo que se puede expresar. El nombre único por evento sale de un supuesto de la spec (P-03), no del enunciado. |
+| O-02 | Falta TEC-03 en dependencias solo si más adelante se valida la fecha con el Reloj; hoy no aplica. |
+
+**Dictamen propuesto:** **aprobar** sin cambios obligatorios.
+
+**Aprobación:** pendiente de la firma de Sergio Velásquez. [NECESITA ACLARACIÓN: el enunciado exige revisión humana; Sergio debe confirmar o corregir este dictamen y firmar aquí, o aprobar en el pull request]

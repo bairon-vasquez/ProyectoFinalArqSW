@@ -41,7 +41,7 @@ No se crean puertos ni adaptadores nuevos. `PasarelaPago`, `ServicioMensajeria` 
 |---|---|---|
 | `RepositorioCompradores` | `obtener_o_crear_bloqueado(documento, correo, celular)` | Crea el comprador si no existe o actualiza su correo y celular (P-01 de la spec) y bloquea su fila |
 | `RepositorioEventos` | `obtener_localidad_bloqueada(localidad_id)` | Devuelve la localidad con su evento y bloquea la fila de la localidad |
-| `RepositorioReservas` | `contar_boletas_ocupadas(localidad_id, ahora)` | Boletas pagadas y boletas en reservas vigentes de la localidad |
+| `RepositorioReservas` | `contar_boletas_ocupadas(localidad_ids, ahora)` | Por localidad: boletas pagadas (cantidad de las reservas `CONFIRMADA`) y boletas en reservas vigentes. Es el mismo método que usa CU-05; aquí se llama con una sola localidad |
 | `RepositorioReservas` | `contar_boletas_del_comprador(documento, evento_id, ahora)` | Boletas del comprador en el evento, en reservas vigentes y pagadas |
 | `RepositorioReservas` | `tiene_descuento_en_evento(documento, evento_id, ahora)` | Si el comprador ya tiene una reserva vigente o pagada con descuento en el evento |
 | `RepositorioReservas` | `agregar(reserva)` | Guarda la reserva |
@@ -57,7 +57,7 @@ Pasos de `ReservarBoletas`:
    2. Obtener la localidad con su evento y bloquear su fila.
    3. Comprobar que el evento está `PUBLICADO` y que `venta_abierta(ahora)`.
    4. Contar las boletas del comprador en el evento con `ahora`; si con `cantidad` pasa de 4, lanzar la excepción de límite.
-   5. Contar las boletas ocupadas de la localidad con `ahora` y calcular `cupo_disponible`; si `cantidad` no cabe, lanzar la excepción de cupo agotado.
+   5. Contar las boletas ocupadas de la localidad con `ahora` (mismo método que CU-05) y calcular `cupo_disponible`; si `cantidad` no cabe, lanzar la excepción de cupo agotado.
    6. Consultar si el comprador ya tiene descuento en el evento.
    7. Crear la `Reserva` con `vence_en = ahora + 10 minutos`; el dominio calcula `con_descuento` y `monto`.
    8. Guardar y confirmar.

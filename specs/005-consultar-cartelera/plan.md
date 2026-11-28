@@ -88,3 +88,29 @@ Pantalla de cartelera en `comprador/`: lista de eventos con sus localidades, pre
 
 - Regla de dependencia: los comandos de la sección 4 de la [vista de desarrollo](../../docs/vistas/03-desarrollo.md) devuelven vacío.
 - Los escenarios de [spec.md](spec.md) se validan uno por uno en [validacion.md](validacion.md). CU05-E05 usa el reloj controlable.
+
+## Revisión frente a la arquitectura
+
+Revisor: gerente de desarrollo (Sergio Velásquez) · Fecha: 27/11/2026 · Lista de criterios: [vista de desarrollo](../../docs/vistas/03-desarrollo.md), ADR y [checklist](../../docs/equipo/checklist-revision.md), grupo 3.
+
+| Criterio | Resultado |
+|---|---|
+| Cita los ADR que aplican | Sí (001, 002, 003, 006, 007) |
+| Solo usa puertos, adaptadores y archivos de la vista de desarrollo; lo nuevo está marcado *propuesta* | Sí |
+| Respeta la regla de dependencia (Pydantic, SQLAlchemy y FastAPI fuera del núcleo; DTO como `dataclass`) | Sí |
+| El tiempo llega por el puerto `Reloj` o el plan justifica no usarlo | Sí, una vez por consulta |
+| Errores: excepciones de dominio traducidas a HTTP solo en `errores.py` | No hay errores de negocio; lista vacía válida |
+| El frontend no contiene reglas de negocio | Sí |
+| Respeta el orden de bloqueos del ADR-006 | Sí: lectura sin bloqueos |
+
+**Observaciones:**
+
+| ID | Observación |
+|---|---|
+| O-01 | **Método compartido con CU-06.** El conteo de pagadas y reservas vigentes debe ser **un solo método** de `RepositorioReservas` para CU-05 y CU-06: `contar_boletas_ocupadas(localidad_ids, ahora)`, que recibe una o varias localidades y devuelve, por localidad, pagadas y en reservas vigentes. CU-06 lo llama con una sola localidad después de bloquearla. Así la cartelera y la reserva no pueden calcular el cupo de forma distinta. El plan de CU-06 ya se ajustó. |
+| O-02 | El cupo cuenta como **boletas pagadas** la cantidad de las reservas `CONFIRMADA`, no las filas de `Boleta`. Así el cálculo funciona en la iteración 1, cuando CU-07 confirma reservas sin emitir boletas (CU-08 es de la iteración 2), y sigue igual después. |
+| O-03 | Agregar TEC-01 y TEC-02 a las dependencias: la estructura y la raíz de composición que conecta el `Reloj` elegido en el `.env`. |
+
+**Dictamen propuesto:** **aprobar con cambios menores** (O-01 y O-03 en el texto del plan; O-02 no cambia el diseño).
+
+**Aprobación:** pendiente de la firma de Sergio Velásquez. [NECESITA ACLARACIÓN: el enunciado exige revisión humana; Sergio debe confirmar o corregir este dictamen y firmar aquí, o aprobar en el pull request]

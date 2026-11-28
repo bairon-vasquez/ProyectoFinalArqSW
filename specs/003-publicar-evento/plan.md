@@ -98,3 +98,29 @@ CU03-E02 y CU03-E03 se validan cuando CU-05 y CU-06 existan, porque esas dos pan
 
 - Regla de dependencia: los comandos de la sección 4 de la [vista de desarrollo](../../docs/vistas/03-desarrollo.md) devuelven vacío; en particular, nada de `sqlalchemy` ni `pydantic` en `nucleo/`.
 - Los escenarios de [spec.md](spec.md) se validan uno por uno en [validacion.md](validacion.md). CU03-E08 exige reiniciar el backend y consultar la base.
+
+## Revisión frente a la arquitectura
+
+Revisor: gerente de desarrollo (Sergio Velásquez) · Fecha: 27/11/2026 · Lista de criterios: [vista de desarrollo](../../docs/vistas/03-desarrollo.md), ADR y [checklist](../../docs/equipo/checklist-revision.md), grupo 3.
+
+| Criterio | Resultado |
+|---|---|
+| Cita los ADR que aplican | Sí (001, 002, 003, 006) |
+| Solo usa puertos, adaptadores y archivos de la vista de desarrollo; lo nuevo está marcado *propuesta* | Sí |
+| Respeta la regla de dependencia (Pydantic, SQLAlchemy y FastAPI fuera del núcleo; DTO como `dataclass`) | Sí |
+| El tiempo llega por el puerto `Reloj` o el plan justifica no usarlo | No lo usa; justificado (spec P-03) |
+| Errores: excepciones de dominio traducidas a HTTP solo en `errores.py` | Sí: no encontrado → 404, no está en borrador → 409 |
+| El frontend no contiene reglas de negocio | Sí |
+| Respeta el orden de bloqueos del ADR-006 | Sí: no toma bloqueos de cupo; ver O-01 |
+
+**Observaciones:**
+
+| ID | Observación |
+|---|---|
+| O-01 | **Bloqueo del evento frente a CU-02 (spec P-04).** CU-02 queda fuera de las dos iteraciones ([drivers.md](../../docs/drivers.md) 5.4), así que en la iteración 1 no se necesita bloquear el evento. Si CU-02 entra, el evento se agrega al orden del ADR-006 como **comprador → evento → localidad → reserva → pago**, y ese cambio lo hace un ajuste del ADR-006. |
+| O-02 | La lista de borradores dentro de `PublicarEvento` es una lectura sin reglas nuevas; se acepta como método aparte del caso de uso (`listar_borradores`), sin mezclarlo con `publicar`. |
+| O-03 | La misma carrera existe entre CU-04 (cancelar) y CU-06 (reservar): se resuelve en el plan de CU-04, no aquí. |
+
+**Dictamen propuesto:** **aprobar**; O-01 queda registrado para cuando se construya CU-02.
+
+**Aprobación:** pendiente de la firma de Sergio Velásquez. [NECESITA ACLARACIÓN: el enunciado exige revisión humana; Sergio debe confirmar o corregir este dictamen y firmar aquí, o aprobar en el pull request]

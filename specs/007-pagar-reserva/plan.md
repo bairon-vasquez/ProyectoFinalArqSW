@@ -109,3 +109,30 @@ Pantalla de pago en `comprador/`: resumen de la reserva (monto y vencimiento) y 
 - Regla de dependencia: los comandos de la sección 4 de la [vista de desarrollo](../../docs/vistas/03-desarrollo.md) devuelven vacío.
 - EAC-01 (D6): `git diff --name-only HEAD` vacío tras cambiar la pasarela.
 - Los escenarios de [spec.md](spec.md) se validan en [validacion.md](validacion.md). CU07-E06 a E08 usan el reloj controlable y CU07-E09 la concurrencia de EAC-05.
+
+## Revisión frente a la arquitectura
+
+Revisor: gerente de desarrollo (Sergio Velásquez) · Fecha: 27/11/2026 · Lista de criterios: [vista de desarrollo](../../docs/vistas/03-desarrollo.md), ADR y [checklist](../../docs/equipo/checklist-revision.md), grupo 3.
+
+| Criterio | Resultado |
+|---|---|
+| Cita los ADR que aplican | Sí (001, 002, 003, 005, 006, 007) |
+| Solo usa puertos, adaptadores y archivos de la vista de desarrollo; lo nuevo está marcado *propuesta* | Sí |
+| Respeta la regla de dependencia (Pydantic, SQLAlchemy y FastAPI fuera del núcleo; DTO como `dataclass`) | Sí |
+| El tiempo llega por el puerto `Reloj` o el plan justifica no usarlo | Sí, una vez por operación |
+| Errores: excepciones de dominio traducidas a HTTP solo en `errores.py` | Sí: 404 y 409, con `VentaCerrada` compartida con CU-06 |
+| El frontend no contiene reglas de negocio | Sí |
+| Respeta el orden de bloqueos del ADR-006 | Sí: reserva y luego pago |
+
+**Observaciones:**
+
+| ID | Observación |
+|---|---|
+| O-01 | **Boletas en la iteración 1 (spec P-01).** El ADR-006 pide confirmar la reserva y emitir las boletas en la misma transacción. Recomendación: en la iteración 1, T2 confirma la reserva sin emitir boletas; cuando exista CU-08, `EmitirBoletas` se llama **dentro de esa misma T2**, sin cambiar el resto del diseño. La diferencia temporal se registra como deuda técnica en [arquitectura.md](../../docs/arquitectura.md), sección 9. La otra opción, adelantar CU-08 a la iteración 1, es decisión de la planeación (acta, riesgo nuevo). |
+| O-02 | El cupo cuenta como **boletas pagadas** la cantidad de las reservas `CONFIRMADA`, no las filas de `Boleta`. Así el cálculo funciona en la iteración 1, cuando CU-07 confirma reservas sin emitir boletas (CU-08 es de la iteración 2), y sigue igual después (ver O-02 de CU-05). |
+| O-03 | Si la reserva vence mientras se espera a la pasarela, T2 usa la `ahora` tomada al inicio, así que el pago aprobado confirma la reserva: el plazo se evalúa al momento de la solicitud. Con las pasarelas simuladas la espera es inmediata; se acepta y se documenta en el plan. |
+| O-04 | Agregar TEC-01 a las dependencias. |
+
+**Dictamen propuesto:** **aprobar con cambios menores**; O-01 necesita una decisión del equipo antes de implementar T-07-02.
+
+**Aprobación:** pendiente de la firma de Sergio Velásquez. [NECESITA ACLARACIÓN: el enunciado exige revisión humana; Sergio debe confirmar o corregir este dictamen y firmar aquí, o aprobar en el pull request]
