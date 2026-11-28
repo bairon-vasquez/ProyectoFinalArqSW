@@ -185,16 +185,16 @@ Se copian de `vision.md` sin transformarlas; se añaden tipo, origen e impacto.
 | ID | Preocupación | Qué hay que decidir | Por qué importa aquí |
 |---|---|---|---|
 | PA-01 | Estructura general | Hexagonal frente a Clean Architecture; carpetas del núcleo, puertos y adaptadores; dónde vive la raíz de composición | Es la exigencia con más peso en la evaluación (RT-01, RT-02). Se decide en [ADR-001](adr/ADR-001-estilo-arquitectonico.md) |
-| PA-02 | Concurrencia sobre el cupo | Bloqueo de filas, nivel de aislamiento o restricción en la base; cómo el caso de uso pide el cupo a la persistencia sin conocer SQL | Sin esto hay sobreventa, el problema que motiva el sistema (OB-01, EAC-03). Se decide en el ADR de persistencia |
+| PA-02 | Concurrencia sobre el cupo | Bloqueo de filas, nivel de aislamiento o restricción en la base; cómo el caso de uso pide el cupo a la persistencia sin conocer SQL | Sin esto hay sobreventa, el problema que motiva el sistema (OB-01, EAC-03). Se decide en [ADR-006](adr/ADR-006-persistencia.md) |
 | PA-03 | Fallas de integración con la pasarela: pago pendiente, confirmación tardía, reembolso | Forma del puerto de pago (respuesta síncrona o confirmación posterior), cómo llega la confirmación (llamada de la pasarela o consulta periódica), cómo se impide el doble pago | Es donde el sistema puede perder dinero o cupo (R-04, EAC-05). Se decide en [ADR-005](adr/ADR-005-integracion-pasarelas-mensajeria.md) |
 | PA-04 | Configuración de adaptadores | Nombres de las variables del `.env`, cómo la raíz de composición elige pasarela, mensajería, SIA y reloj, y qué pasa si la variable falta | Hace verificable el cambio sin editar código (RT-05, EAC-01, EAC-02) |
 | PA-05 | Identificación del comprador sin contraseña | Qué dato identifica al comprador (S-10), qué hacer si el mismo documento llega con otro correo o celular | Afecta el límite de 4 boletas (RN-04) y el descuento a una sola boleta (RN-09) |
 | PA-06 | Comunicación entre Angular y la API | Contrato OpenAPI, formato de errores de negocio, CORS por `.env`, cómo se entrega la imagen QR | El frontend no debe contener reglas (ADR-003); los errores del núcleo deben llegar legibles al comprador |
-| PA-07 | Disparo del vencimiento de reservas | Tarea periódica, evaluación al consultar el cupo o ambas; cómo se integra con el reloj controlable | El cupo debe liberarse a tiempo y demostrarse sin esperar (OB-04, EAC-04) |
+| PA-07 | Disparo del vencimiento de reservas | Tarea periódica, evaluación al consultar el cupo o ambas; cómo se integra con el reloj controlable | El cupo debe liberarse a tiempo y demostrarse sin esperar (OB-04, EAC-04). Opciones en [ADR-007](adr/ADR-007-reloj-como-puerto.md), sección 5.1 |
 | PA-08 | Acceso del organizador | Mecanismo mínimo para proteger la parte de administración (S-03) | Sin él cualquiera publica o cancela eventos |
 | PA-09 | Generación del código de boleta y del QR | Fuente de aleatoriedad, unicidad garantizada en la base, dónde se genera la imagen (núcleo con puerto o adaptador) | RN-08 y EAC-07; la librería de QR no puede entrar al núcleo (RT-02) |
 
-*ADR-005 es el modelo de integración con la pasarela, la mensajería y el SIA, y también decide el ensamblado de adaptadores (PA-04). [NECESITA ACLARACIÓN: ¿qué tema tienen ADR-006 (Mariana) y ADR-007 (Bairon), y en cuál se decide el acceso del organizador (PA-08)?]*
+*ADR-005 decide la integración con pasarela, mensajería y SIA y el ensamblado de adaptadores (PA-03, PA-04); ADR-006 la persistencia y el cupo (PA-02); ADR-007 el reloj (PA-07). [NECESITA ACLARACIÓN: ¿en qué ADR se decide el acceso del organizador (PA-08)?]*
 
 ## 5. Matriz de priorización
 
