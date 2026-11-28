@@ -13,7 +13,7 @@ Aplican a todo el código del repositorio: backend Python 3.12 + FastAPI ([ADR-0
 | Granularidad | Una tarea por commit; si cambia el comportamiento, `spec.md` va en el mismo commit | |
 | Integración | Todo cambio entra por pull request, con la plantilla de `.github/pull_request_template.md`, revisado por alguien distinto del autor ([normas.md](normas.md)) | |
 
-[NECESITA ACLARACIÓN: ¿qué significa `CC` en `T-CC-NN`? El formato no está definido en el repositorio.]
+`CC` es el número del caso de uso y `NN` el de la tarea dentro de su `tasks.md`, como define [AGENTS.md](../../AGENTS.md) (por ejemplo, `T-06-04`).
 
 ## 2. Formateo y lint
 

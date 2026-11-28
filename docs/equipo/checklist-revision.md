@@ -29,7 +29,7 @@ El comando no detecta las librerías de proveedores (ítem 1.4): esa parte se re
 | # | Ítem | Sí | No |
 |---|---|---|---|
 | 2.1 | La descripción del PR tiene `Closes #` con el número del issue | ☐ | ☐ |
-| 2.2 | Cada commit lleva el ID de la tarea (`T-CC-NN`) [NECESITA ACLARACIÓN: ¿qué significa `CC` en `T-CC-NN`? El formato no está definido en el repositorio] | ☐ | ☐ |
+| 2.2 | Cada commit lleva el ID de la tarea (`T-CC-NN`, con `CC` el número del caso de uso: [AGENTS.md](../../AGENTS.md)) | ☐ | ☐ |
 | 2.3 | Hay una tarea por commit | ☐ | ☐ |
 | 2.4 | Si cambia el comportamiento, `spec.md` está actualizado en el mismo commit | ☐ | ☐ |
 
