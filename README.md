@@ -146,7 +146,7 @@ Requisitos: instalación completa (secciones 1 a 8).
 
 2. En `.env` deje `PASARELA_PAGO=simulada_a` y ejecute el backend (paso 7 de la instalación).
 
-3. Haga un pago de demostración desde la interfaz y anote la pasarela que lo procesó [NECESITA ACLARACIÓN: ¿cómo se ve qué pasarela está activa? Por ejemplo, una línea en el registro al arrancar o un dato en la respuesta del pago. Lo debe definir el adaptador de pasarela].
+3. Haga un pago de demostración desde la interfaz y anote la pasarela que lo procesó. Al arrancar, el backend escribe en el registro la pasarela activa (por ejemplo, `Pasarela activa: simulada_a`) y la referencia del pago empieza por `A-` con `simulada_a` o por `B-` con `simulada_b` (ADR-005).
 
 4. Detenga el backend, edite `.env` y cambie la línea:
 
