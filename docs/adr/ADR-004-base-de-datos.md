@@ -6,7 +6,7 @@
 | Autora | Mariana García |
 | Fecha | 27/11/2026 |
 | Aprobación de arquitectura | Sergio Velásquez (gerente de desarrollo) [NECESITA ACLARACIÓN: según `normas.md` en arquitectura decide Sergio; ¿ya aprobó esta decisión para dejarla en estado Aceptado?] |
-| Relacionados | [ADR-001](ADR-001-estilo-arquitectonico.md) (estilo hexagonal), [ADR-002](ADR-002-backend.md) (backend con SQLAlchemy), ADR de persistencia (estrategia de integridad), `vision.md` (RT-02, RT-03, RT-07, OB-01, R-03) |
+| Relacionados | [ADR-001](ADR-001-estilo-arquitectonico.md) (estilo hexagonal), [ADR-002](ADR-002-backend.md) (backend con SQLAlchemy), [ADR-006](ADR-006-persistencia.md) (persistencia y estrategia de integridad), `vision.md` (RT-02, RT-03, RT-07, OB-01, R-03) |
 
 ## 1. Contexto
 
@@ -20,7 +20,7 @@ El sistema necesita lo siguiente:
 - Que funcione con SQLAlchemy y Alembic, que el [ADR-002](ADR-002-backend.md) confina a los adaptadores (RT-02).
 - Que no tenga costo, por tratarse de un proyecto universitario.
 
-Este ADR elige el motor. Cómo se protege el cupo con ese motor (bloqueos, restricciones, aislamiento) se decide en el ADR de persistencia.
+Este ADR elige el motor. Cómo se protege el cupo con ese motor (bloqueos, restricciones, aislamiento) se decide en el [ADR-006](ADR-006-persistencia.md).
 
 ## 2. Drivers de decisión
 
@@ -32,7 +32,7 @@ Este ADR elige el motor. Cómo se protege el cupo con ese motor (bloqueos, restr
 | C4 | Soporte de SQLAlchemy y Alembic | [ADR-002](ADR-002-backend.md), RT-03 |
 | C5 | Costo cero | Restricción del proyecto universitario [NECESITA ACLARACIÓN: el enunciado no habla de costo; ¿el costo cero es una restricción del docente o solo del equipo?] |
 
-*Los ID C1 a C5 son locales a este ADR. Cuando exista `drivers.md`, deben reemplazarse por los ID de ese catálogo [NECESITA ACLARACIÓN: ¿qué ID tendrán en `drivers.md`?].*
+*Los ID C1 a C5 son locales a este ADR: [drivers.md](../drivers.md) ya existe y no incluye estos criterios [NECESITA ACLARACIÓN: ¿se incorporan a `drivers.md` o se mantienen locales a cada ADR?].*
 
 ## 3. Alternativas consideradas
 
@@ -72,7 +72,7 @@ La base de datos será **PostgreSQL** [NECESITA ACLARACIÓN: ¿qué versión may
 
 Razones, ligadas a los drivers:
 
-1. **C1 y OB-01:** `SELECT ... FOR UPDATE` bloquea solo las filas de la localidad que se reserva, de modo que la integridad del cupo se logra sin serializar toda la base. Es el mecanismo sobre el que el ADR de persistencia protegerá el cupo con compras simultáneas (R-03).
+1. **C1 y OB-01:** `SELECT ... FOR UPDATE` bloquea solo las filas de la localidad que se reserva, de modo que la integridad del cupo se logra sin serializar toda la base. Es el mecanismo sobre el que el [ADR-006](ADR-006-persistencia.md) protege el cupo con compras simultáneas (R-03).
 2. **C2:** las transacciones ACID mantienen consistentes el pago, la emisión de las boletas y el reembolso, y el DDL transaccional hace que las migraciones de Alembic se apliquen completas o no se apliquen.
 3. **C3:** una definición en `docker-compose.yml` levanta la base con un comando, lo que cumple el README de instalación desde cero (RT-11).
 4. **C4:** SQLAlchemy y Alembic soportan PostgreSQL de forma nativa y se usan solo en adaptadores, según el ADR-002.
@@ -103,7 +103,7 @@ flowchart LR
 | Consecuencia | Mitigación |
 |---|---|
 | Instalar el sistema requiere Docker, más pesado que un archivo SQLite | El README documenta `docker-compose` como paso de instalación; Bairon mantiene el README y el `.env` (`roles.md`) |
-| La conexión a la base se configura en el `.env` | Una variable con la URL de conexión; el adaptador de persistencia la lee en la raíz de composición del [ADR-002](ADR-002-backend.md) |
+| La conexión a la base se configura en el `.env` | La variable `DATABASE_URL` con la URL de conexión; la lee `arranque.py`, la raíz de composición ([ADR-002](ADR-002-backend.md), [ADR-005](ADR-005-integracion-pasarelas-mensajeria.md)), y el adaptador de persistencia la recibe |
 | Cambiar de motor en el futuro implica reescribir consultas específicas de PostgreSQL | Esas consultas viven solo en el adaptador de persistencia; el núcleo no cambia |
-| Este ADR no define cómo se aplica el bloqueo, el nivel de aislamiento ni las restricciones de integridad | Se definen en el ADR de persistencia |
+| Este ADR no define cómo se aplica el bloqueo, el nivel de aislamiento ni las restricciones de integridad | Se definen en el [ADR-006](ADR-006-persistencia.md) |
 | El enunciado pide demostrar la ausencia de sobreventa con compras simultáneas | El escenario de concurrencia se registra en `validacion.md` (R-03) |

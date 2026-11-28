@@ -35,7 +35,7 @@ El frontend debe cumplir lo siguiente:
 
 El conocimiento previo del equipo se registra como **factor adicional** (fila C7 de la comparación y punto 7 de la decisión). No es un driver y no decide por sí solo.
 
-*Los ID C1 a C6 son locales a este ADR. Cuando exista `drivers.md`, deben reemplazarse por los ID de ese catálogo [NECESITA ACLARACIÓN: ¿qué ID tendrán estos drivers en `drivers.md`?].*
+*Los ID C1 a C6 son locales a este ADR: [drivers.md](../drivers.md) ya existe y no incluye estos criterios [NECESITA ACLARACIÓN: ¿se incorporan a `drivers.md` o se mantienen locales a cada ADR?].*
 
 ## 3. Alternativas consideradas
 

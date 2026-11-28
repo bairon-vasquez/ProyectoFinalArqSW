@@ -2,7 +2,7 @@
 
 - Estado: Aceptado | Fecha: 27/11/2026 | Autora: Mariana García
 
-Relacionados: [vision.md](../vision.md), [drivers.md](../drivers.md), [ADR-001](ADR-001-estilo-arquitectonico.md) (estilo hexagonal), [ADR-002](ADR-002-backend.md) (backend), [ADR-004](ADR-004-base-de-datos.md) (PostgreSQL), [ADR-005](ADR-005-integracion-pasarelas-mensajeria.md) (pago pendiente y confirmación posterior).
+Relacionados: [vision.md](../vision.md), [drivers.md](../drivers.md), [ADR-001](ADR-001-estilo-arquitectonico.md) (estilo hexagonal), [ADR-002](ADR-002-backend.md) (backend), [ADR-004](ADR-004-base-de-datos.md) (PostgreSQL), [ADR-005](ADR-005-integracion-pasarelas-mensajeria.md) (pago pendiente y confirmación posterior), [ADR-007](ADR-007-reloj-como-puerto.md) (el reloj como puerto) y la [vista de desarrollo](../vistas/03-desarrollo.md) (nombres de repositorios y archivos).
 
 ## Contexto
 
@@ -73,9 +73,9 @@ Se adopta **A1: SQLAlchemy 2 + Alembic, solo en `src/backend/adaptadores/salida/
 
 ### Puertos y mapeo
 
-- Las interfaces de repositorio viven en `src/backend/nucleo/puertos/repositorios.py`, como clases abstractas [NECESITA ACLARACIÓN: ¿clases abstractas o `Protocol`? Es el punto 1 pendiente del ADR-005; se recomienda `abc.ABC`]. Los nombres de repositorios y métodos de abajo son ilustrativos; se fijan en la vista de desarrollo.
+- Las interfaces de repositorio viven en `src/backend/nucleo/puertos/repositorios.py`, como clases abstractas [NECESITA ACLARACIÓN: ¿clases abstractas o `Protocol`? Es el punto 1 pendiente del ADR-005; se recomienda `abc.ABC`]. Los nombres de los repositorios (`RepositorioEventos`, `RepositorioCompradores`, `RepositorioReservas`, `RepositorioPagos`) los fija la [vista de desarrollo](../vistas/03-desarrollo.md); los de los métodos de abajo son ilustrativos.
 - Los casos de uso piden **intenciones**, no SQL: por ejemplo "obtener la localidad para reservar", que el adaptador implementa con el bloqueo. El núcleo nunca ve `FOR UPDATE`.
-- La frontera de la transacción es un puerto `UnidadDeTrabajo` en el mismo archivo [NECESITA ACLARACIÓN: ¿el puerto va en `repositorios.py` o en su propio archivo?]: se abre con `with`, entrega los repositorios, confirma con `confirmar()` y revierte si hay una excepción.
+- La frontera de la transacción es un puerto `UnidadDeTrabajo` en el mismo archivo, como fija la vista de desarrollo: se abre con `with`, entrega los repositorios, confirma con `confirmar()` y revierte si hay una excepción.
 - Las entidades del dominio son clases comunes: **no heredan de nada del ORM**. Los modelos de SQLAlchemy viven solo en el adaptador, y funciones de mapeo explícitas traducen en ambos sentidos. Una entidad del dominio nunca sale del adaptador como un modelo ni al revés.
 
 ```text
@@ -116,7 +116,7 @@ Se compararon tres mecanismos:
 - Referencia del pago en la pasarela `UNIQUE`.
 - Montos en COP enteros (S-13).
 
-**Límite de 4 boletas por evento (RN-04).** Dos reservas simultáneas del mismo comprador en localidades distintas de un mismo evento no se serializan por el bloqueo de la localidad. Para cubrirlo, el adaptador también bloquea la fila del comprador (identificado por su documento, S-10) antes de contar sus boletas [NECESITA ACLARACIÓN: ¿el comprador se guarda como entidad con una fila propia? Si no, hay que decidir otro punto de bloqueo].
+**Límite de 4 boletas por evento (RN-04).** Dos reservas simultáneas del mismo comprador en localidades distintas de un mismo evento no se serializan por el bloqueo de la localidad. Para cubrirlo, el adaptador también bloquea la fila del comprador (identificado por su documento, S-10) antes de contar sus boletas. El comprador es una entidad con fila propia, con su `RepositorioCompradores` ([vista de desarrollo](../vistas/03-desarrollo.md)).
 
 **Orden fijo de bloqueos.** Para evitar interbloqueos entre casos de uso (CU-06, CU-07, CU-10, CU-04), quien necesite varios bloqueos los toma siempre en este orden: **comprador → localidad → reserva → pago**, y varias filas del mismo tipo en orden de identificador. Si la base detecta un interbloqueo, aborta una de las transacciones y la API responde con un error; no se pierde integridad.
 
@@ -169,7 +169,7 @@ El script (`src/backend/scripts/`) usa **los mismos repositorios y la misma `Uni
 - Una operación que cambie el cupo y olvide el bloqueo rompe la garantía. Mitigación: el orden de bloqueos y el paso 2-3 están en este ADR; el revisor lo comprueba en cada pull request ([checklist](../equipo/checklist-revision.md)); el escenario de concurrencia está en `validacion.md`.
 - Con el bloqueo por localidad, un evento con una sola localidad muy pedida procesa sus reservas una tras otra. Para el volumen de demostración (S-01) se acepta.
 - Si el proceso se cae entre la transacción 1 y la 2, el pago queda `INICIADO` sin resultado. No se cobra dos veces, porque el índice bloquea un segundo intento, pero el estado no se resuelve solo [NECESITA ACLARACIÓN: ¿qué debe pasar con un pago `INICIADO` sin resultado cuando la reserva vence? El enunciado no lo dice; se propone registrarlo como deuda técnica en `arquitectura.md`].
-- Los nombres de los repositorios y los archivos de `persistencia/` son ilustrativos hasta que exista la vista de desarrollo.
+- Los nombres de los métodos de los repositorios son ilustrativos hasta que se escriban los `plan.md`; los de los repositorios y los archivos de `persistencia/` están en la vista de desarrollo.
 
 **Riesgos aceptados**
 - Que dos casos de uso toquen filas en distinto orden y la base aborte una de las transacciones. Se mitiga con el orden fijo y se acepta como error visible, nunca como sobreventa.
@@ -186,8 +186,8 @@ El script (`src/backend/scripts/`) usa **los mismos repositorios y la misma `Uni
 | # | Qué confirmar | Opción propuesta |
 |---|---|---|
 | 1 | Puertos como clase abstracta o `Protocol` (punto 1 del ADR-005) | Clase abstracta (`abc.ABC`) |
-| 2 | Dónde vive el puerto `UnidadDeTrabajo` | En `repositorios.py` |
+| 2 | Dónde vive el puerto `UnidadDeTrabajo` | En `repositorios.py`: resuelto en la vista de desarrollo |
 | 3 | Estado `INICIADO` del pago, previo a la llamada a la pasarela | Aceptarlo; es lo que hace posible impedir el doble pago antes de cobrar |
-| 4 | Bloqueo por comprador para el límite de 4 boletas (RN-04) | Sí, si el comprador tiene fila propia |
+| 4 | Bloqueo por comprador para el límite de 4 boletas (RN-04) | Sí: el comprador tiene fila propia (resuelto en la vista de desarrollo) |
 | 5 | Aprobación de Sergio Velásquez como gerente de desarrollo (`normas.md`, sección 3) | Pendiente: este ADR se marcó Aceptado según lo pedido por el equipo |
 | 6 | Si este ADR sigue válido en caso de que ADR-001 cambie a Clean Architecture | Sí: los repositorios pasan a ser gateways y el resto se mantiene |

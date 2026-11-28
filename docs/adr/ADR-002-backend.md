@@ -17,7 +17,7 @@ El backend debe cumplir lo siguiente:
 - Alojar el núcleo (dominio y casos de uso) sin dependencias de frameworks, base de datos, web ni proveedores (RT-02), según el estilo hexagonal propuesto en el ADR-001.
 - Exponer una API REST que consuma la interfaz web de administración y de usuario (RT-06).
 - Conectar la pasarela de pago, la mensajería, el SIA y el reloj como adaptadores elegidos por configuración, sin tocar el núcleo (RT-04, RT-05, OB-03).
-- Persistir en una base de datos relacional con transacciones, para que no se venda por encima del cupo con compras simultáneas (RT-03, OB-01, R-03). La elección de la base de datos y de la estrategia de integridad se justifica en el ADR de persistencia.
+- Persistir en una base de datos relacional con transacciones, para que no se venda por encima del cupo con compras simultáneas (RT-03, OB-01, R-03). La elección de la base de datos se justifica en el [ADR-004](ADR-004-base-de-datos.md) y la estrategia de integridad en el [ADR-006](ADR-006-persistencia.md).
 - Generar la imagen del código QR de cada boleta (OB-02).
 - Entregarse en el plazo del enunciado (v0.1 el 04/12/2026 y v1.0 el 11/12/2026) con 3 personas (R-01).
 
@@ -33,7 +33,7 @@ El backend debe cumplir lo siguiente:
 | C6 | Calidad del código que produce el agente de IA (SDD) | RT-08, R-02 |
 | C7 | Plazo de 2 semanas con 3 personas | RT-10, R-01 |
 
-*Los ID C1 a C7 son locales a este ADR. Cuando exista `drivers.md`, deben reemplazarse por los ID de ese catálogo [NECESITA ACLARACIÓN: ¿qué ID tendrán estos drivers en `drivers.md`?].*
+*Los ID C1 a C7 son locales a este ADR: [drivers.md](../drivers.md) ya existe y no incluye estos criterios [NECESITA ACLARACIÓN: ¿se incorporan a `drivers.md` o se mantienen locales a cada ADR?].*
 
 ## 3. Alternativas consideradas
 
@@ -78,7 +78,7 @@ Razones, ligadas a los drivers:
 1. **C1 y RT-02:** el núcleo se escribe como clases de Python común, sin decoradores, anotaciones ni base de datos. FastAPI y Pydantic quedan confinados a los adaptadores de entrada, de modo que el framework no tiene punto de entrada al núcleo ni por convención.
 2. **C2 y RT-05:** el ensamblado de adaptadores es una función que lee el `.env` y construye la pasarela, la mensajería, el SIA y el reloj elegidos. Cambiar de proveedor es agregar un adaptador y editar la configuración, sin tocar el núcleo (OB-03).
 3. **C3 y RT-06:** FastAPI genera el documento OpenAPI y la documentación interactiva desde los esquemas de los endpoints sin configuración adicional, y de ahí se puede generar el cliente de Angular.
-4. **C4 y OB-01:** SQLAlchemy ofrece transacciones y bloqueo de filas en PostgreSQL, que son las herramientas con las que el ADR de persistencia protegerá el cupo con compras simultáneas (R-03). SQLAlchemy y Alembic se usan solo en adaptadores.
+4. **C4 y OB-01:** SQLAlchemy ofrece transacciones y bloqueo de filas en PostgreSQL, que son las herramientas con las que el [ADR-006](ADR-006-persistencia.md) protege el cupo con compras simultáneas (R-03). SQLAlchemy y Alembic se usan solo en adaptadores.
 5. **C5:** `qrcode` genera la imagen de la boleta sin código adicional relevante.
 6. **C6 y C7:** el código es breve, lo que facilita la revisión humana de lo que produce el agente (RT-08) y reduce el volumen de código repetitivo en un plazo de 2 semanas (R-01).
 7. **Factor adicional, no único:** el equipo conoce Python [NECESITA ACLARACIÓN: ¿cuántos integrantes ya han usado Python y FastAPI? Este dato no está en el enunciado ni en `vision.md`]. Reduce el riesgo en C7, pero la decisión se sostiene sin él por las razones 1 a 6.
@@ -111,4 +111,4 @@ flowchart LR
 | El tipado de Python es opcional y los errores de tipo pueden llegar a ejecución | Verificador de tipos en la revisión de PR [NECESITA ACLARACIÓN: ver C6] |
 | Ningún mecanismo del framework impide importar FastAPI o Pydantic desde el núcleo | Lista de verificación de revisión de código y revisión del PR por alguien distinto del autor (R-02, `normas.md`); `AGENTS.md` repite la regla en cada sesión con el agente |
 | Python no tiene un contenedor de inyección de dependencias estándar | El ensamblado se hace a mano en una raíz de composición; se limita al `.env` y a una función |
-| Este ADR no decide la base de datos ni la estrategia contra la sobreventa | Se resuelven en el ADR de persistencia |
+| Este ADR no decide la base de datos ni la estrategia contra la sobreventa | La base de datos se decide en el [ADR-004](ADR-004-base-de-datos.md) y la estrategia contra la sobreventa en el [ADR-006](ADR-006-persistencia.md) |

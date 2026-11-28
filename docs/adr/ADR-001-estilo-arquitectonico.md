@@ -2,7 +2,7 @@
 
 - Estado: Propuesto | Fecha: 27/11/2026 | Autor: Sergio Velásquez
 
-Relacionados: [vision.md](../vision.md), [drivers.md](../drivers.md), [ADR-002](ADR-002-backend.md) (backend), [ADR-003](ADR-003-frontend.md) (frontend), [ADR-004](ADR-004-base-de-datos.md) (base de datos). Según el enunciado, este ADR queda **propuesto** en la semana 0 y se **acepta** en la iteración 1, después de la clase de arquitectura hexagonal (RT-01).
+Relacionados: [vision.md](../vision.md), [drivers.md](../drivers.md), [ADR-002](ADR-002-backend.md) (backend), [ADR-003](ADR-003-frontend.md) (frontend), [ADR-004](ADR-004-base-de-datos.md) (base de datos), [ADR-005](ADR-005-integracion-pasarelas-mensajeria.md) (integración), [ADR-006](ADR-006-persistencia.md) (persistencia), [ADR-007](ADR-007-reloj-como-puerto.md) (reloj) y la [vista de desarrollo](../vistas/03-desarrollo.md), que fija los nombres de carpetas y archivos. Según el enunciado, este ADR queda **propuesto** en la semana 0 y se **acepta** en la iteración 1, después de la clase de arquitectura hexagonal (RT-01).
 
 ## Contexto
 
@@ -101,16 +101,19 @@ src/
 ├── backend/
 │   ├── nucleo/
 │   │   ├── dominio/          # entidades y reglas de negocio (RN-01 a RN-11)
-│   │   ├── casos_uso/        # un caso de uso por CU del catálogo
-│   │   └── puertos/          # interfaces que el núcleo ofrece y que necesita
-│   └── adaptadores/
-│       ├── entrada/          # API REST con FastAPI y Pydantic
-│       └── salida/
-│           ├── persistencia/ # PostgreSQL con SQLAlchemy y Alembic
-│           ├── pasarelas/    # simulada_a, simulada_b
-│           ├── mensajeria/   # consola, archivo
-│           ├── sia/          # simulado
-│           └── reloj/        # sistema, controlable
+│   │   ├── casos_uso/        # un caso de uso por CU del catálogo (puertos de entrada)
+│   │   └── puertos/          # puertos de salida: interfaces que el núcleo necesita
+│   ├── adaptadores/
+│   │   ├── entrada/          # API REST con FastAPI y Pydantic
+│   │   └── salida/
+│   │       ├── persistencia/ # PostgreSQL con SQLAlchemy y Alembic
+│   │       ├── pasarelas/    # simulada_a, simulada_b
+│   │       ├── mensajeria/   # consola, archivo
+│   │       ├── sia/          # simulado
+│   │       ├── reloj/        # sistema, controlable
+│   │       └── qr/           # imagen del QR con la librería qrcode
+│   ├── scripts/              # script de datos de demostración
+│   └── arranque.py           # raíz de composición: lee el .env y conecta puertos y adaptadores
 └── frontend/                 # Angular: cliente del adaptador de entrada
 ```
 
@@ -175,7 +178,7 @@ flowchart LR
 |---|---|---|
 | 1 | ¿Los puertos de entrada son interfaces explícitas o los casos de uso son el puerto de entrada? | Los casos de uso son el puerto de entrada; `puertos/` contiene solo los de salida |
 | 2 | ¿`puertos/` se divide en `entrada/` y `salida/`? | Depende de la respuesta 1 |
-| 3 | Dónde vive la raíz de composición que lee el `.env` y ensambla los adaptadores | Fuera del núcleo, junto al arranque de la API [NECESITA ACLARACIÓN: ¿en qué carpeta exacta?] |
+| 3 | Dónde vive la raíz de composición que lee el `.env` y ensambla los adaptadores | Fuera del núcleo y de `adaptadores/`, en `src/backend/arranque.py` (resuelto en la [vista de desarrollo](../vistas/03-desarrollo.md)) |
 | 4 | Cómo se verifica la regla de dependencia | Búsqueda de imports en la lista de verificación de revisión; evaluar una herramienta que la compruebe en cada pull request |
-| 5 | Dónde se genera la imagen QR (PA-09) | En un adaptador de salida detrás de un puerto, para no meter la librería en el núcleo |
+| 5 | Dónde se genera la imagen QR (PA-09) | En un adaptador de salida (`adaptadores/salida/qr/`) detrás del puerto `GeneradorQR`, para no meter la librería en el núcleo (resuelto en la vista de desarrollo) |
 | 6 | Si la decisión se mantiene | Pasar este ADR a **Aceptado** y completar la vista de desarrollo; si cambia, escribir un ADR nuevo que lo reemplace y ajustar la vista |

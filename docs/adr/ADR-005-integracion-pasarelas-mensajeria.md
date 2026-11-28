@@ -99,7 +99,7 @@ Cada adaptador escribe al arrancar una línea de registro con su nombre (por eje
 
 ### Ensamblado en `arranque.py`
 
-`arranque.py` [NECESITA ACLARACIÓN: ¿en qué carpeta? Es el punto 3 pendiente del ADR-001; se propone `src/backend/arranque.py`, fuera de `nucleo/` y de `adaptadores/`] lee `PASARELA_PAGO`, `MENSAJERIA` y `SIA` del `.env` y conecta cada puerto con su adaptador mediante un registro por puerto:
+`arranque.py`, en `src/backend/` y fuera de `nucleo/` y de `adaptadores/` (ubicación fijada en la [vista de desarrollo](../vistas/03-desarrollo.md)), lee `PASARELA_PAGO`, `MENSAJERIA` y `SIA` del `.env` y conecta cada puerto con su adaptador mediante un registro por puerto:
 
 ```python
 PASARELAS = {
@@ -120,6 +120,8 @@ PASARELAS = {
 | `APROBADO` | Confirma la reserva y emite las boletas (CU-08) |
 | `RECHAZADO` | La reserva sigue vigente; el comprador puede reintentar dentro del plazo (RN-06) |
 | `PENDIENTE` | Guarda el pago como pendiente; CU-07 rechaza un nuevo intento sobre la misma reserva mientras exista un pago pendiente (RN-06). El plazo de 10 minutos sigue corriendo (RN-05) |
+
+`ResultadoPago` es lo que responde la pasarela. El estado que el núcleo **guarda** para cada intento de pago tiene dos valores más: `INICIADO`, que se registra antes de llamar a la pasarela para impedir el doble pago (propuesto en el [ADR-006](ADR-006-persistencia.md), pendiente de confirmar), y `REEMBOLSADO`, tras un reembolso (ver la [vista lógica](../vistas/01-logica.md)).
 
 ### Confirmación posterior de un pago pendiente
 
@@ -213,7 +215,7 @@ Si el SIA no responde o no encuentra el documento, el adaptador lanza una excepc
 | # | Qué confirmar | Opción propuesta |
 |---|---|---|
 | 1 | Puertos como clase abstracta o `Protocol` | Clase abstracta (`abc.ABC`) |
-| 2 | Carpeta de `arranque.py` (punto 3 del ADR-001) | `src/backend/arranque.py` |
+| 2 | Carpeta de `arranque.py` (punto 3 del ADR-001) | `src/backend/arranque.py`: resuelto en la [vista de desarrollo](../vistas/03-desarrollo.md) |
 | 3 | Confirmación de pagos pendientes | Endpoint de notificación que simula el webhook |
 | 4 | Si el registro de adaptadores se mantiene en `arranque.py` o se carga por nombre desde el `.env`, para que integrar un proveedor no edite ningún archivo existente | Registro en `arranque.py`: es más simple de revisar |
 | 5 | Si este ADR sigue válido en caso de que ADR-001 cambie a Clean Architecture | Sí: los puertos pasan a ser gateways y el resto se mantiene |
