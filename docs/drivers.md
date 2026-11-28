@@ -34,16 +34,16 @@ Las reglas se toman del enunciado sin cambios de fondo y se identifican para pod
 | CU-02 | Editar evento en borrador | Organizador | No | RN-02 y S-08: solo se bloquean las localidades al publicar | sin especificar |
 | CU-03 | Publicar evento | Organizador | No | RN-02: sin publicación no hay cartelera ni reservas | `specs/003-publicar-evento` (planeado) |
 | CU-04 | Cancelar evento | Organizador | **Sí** | RN-10, S-11. Anula reservas, reembolsa y notifica | sin especificar |
-| CU-05 | Consultar cartelera | Comprador | No | RN-02: solo eventos publicados y no cancelados, con cupo por localidad (RN-03) | `specs/005-consultar-cartelera` (planeado) |
-| CU-06 | Reservar boletas | Comprador (usa el SIA) | **Sí** | RN-03, RN-04, RN-05, RN-09, RN-11, S-05, S-10. Identifica al comprador, calcula la tarifa y aparta el cupo | `specs/006-reservar-boletas` (planeado) |
-| CU-07 | Pagar reserva | Comprador (usa la pasarela) | **Sí** | RN-06, RN-11. Resultado aprobado, rechazado o pendiente | `specs/007-pagar-reserva` (planeado) |
+| CU-05 | Consultar cartelera | Comprador | No | RN-02: solo eventos publicados y no cancelados, con cupo por localidad (RN-03) | [`specs/005-consultar-cartelera`](../specs/005-consultar-cartelera/spec.md) |
+| CU-06 | Reservar boletas | Comprador (usa el SIA) | **Sí** | RN-03, RN-04, RN-05, RN-09, RN-11, S-05, S-10. Identifica al comprador, calcula la tarifa y aparta el cupo | [`specs/006-reservar-boletas`](../specs/006-reservar-boletas/spec.md) |
+| CU-07 | Pagar reserva | Comprador (usa la pasarela) | **Sí** | RN-06, RN-11. Resultado aprobado, rechazado o pendiente | [`specs/007-pagar-reserva`](../specs/007-pagar-reserva/spec.md) |
 | CU-08 | Emitir y enviar boletas con QR | Sistema, al confirmarse el pago (usa la mensajería) | **Sí** | RN-08 | sin especificar |
 | CU-09 | Vencer reservas sin pago confirmado | Sistema, por el reloj | **Sí** | RN-05, RN-03: libera el cupo a los 10 minutos | sin especificar |
 | CU-10 | Procesar la confirmación de la pasarela | Pasarela de pago | **Sí** | RN-06, RN-07, RN-11, S-11, S-12. Incluye la confirmación tardía y el reembolso automático | sin especificar |
 | CU-11 | Consultar el estado de la reserva y del pago | Comprador | No | RN-06: el comprador debe esperar la respuesta de un pago pendiente, así que necesita verla | sin especificar |
 | CU-12 | Acceder a la parte de administración | Organizador | No | S-03: hay al menos un organizador y el mecanismo de acceso se decide en un ADR | sin especificar |
 
-*Los caminos `specs/NNN-...` marcados "planeado" corresponden a los casos de uso que se especifican en el paso 7 del plan de la semana 0 (CU-01, CU-03, CU-05, CU-06, CU-07). Aún no existen.*
+*Los caminos `specs/NNN-...` marcados "planeado" corresponden a casos de uso que se especifican en el paso 7 del plan de la semana 0 y aún no existen (CU-01, CU-03). CU-05, CU-06 y CU-07 ya tienen su carpeta.*
 
 ### 1.3 Casos de uso primarios
 
